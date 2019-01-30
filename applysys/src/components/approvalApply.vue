@@ -204,6 +204,7 @@ export default {
                                         let url = getApplyApi + params.row.id
                                         request.get(url).then(res => {
                                             console.log('res',res)
+                                            console.log('userInfo', userInfo)
                                             this.formData = res
                                             
                                         })
@@ -247,9 +248,8 @@ export default {
         },
         save() {
             this.formData.status='1'
-            this.formData.updateUser = userInfo.name
+            this.formData.updateUser = userInfo.userId
             request.post(updateApplyApi,this.formData).then(res => {
-                console.log(res)
                 if (res === true) {
                     this.$Message.success('审核成功')
                     this.getAllApproval()
@@ -259,9 +259,8 @@ export default {
         },
         refusal() {
             this.formData.status='2'
-            this.formData.updateUser = userInfo.name
+            this.formData.updateUser = userInfo.userId
             request.post(updateApplyApi,this.formData).then(res => {
-                console.log(res)
                 if (res === true) {
                     this.$Message.success('审核成功')
                     this.getAllApproval()
@@ -277,10 +276,10 @@ export default {
                 this.formData = {
                     // factoryId: '',                  // 厂别id
                     // applyDepart: '',                // 申请部门
-                    // name: '',                  // 申请人
+                    // name: '',                       // 申请人
                     // departureInfoId: '',            // 出发地id
-                    // number: '',                      // 人员数量
-                    // useDate: '',          // 使用日期
+                    // number: '',                     // 人员数量
+                    // useDate: '',                    // 使用日期
                     // useTime: '',                    // 使用时间
                     // phone: '',                      // 电话号码
                     // carNumber: '',                  // 车辆数量

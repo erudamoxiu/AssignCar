@@ -218,13 +218,13 @@ import { map } from 'async';
                         })
                         let sendData = {
                             userIds: ids.join(),
-                            userType: this.type
+                            userType: 4
                         }
                         request.post(addApi,sendData).then(res => {
                             if (res === true) {
                                 // newThis.$Message.success('新增成功')
-                                // newThis.getUserData()
-                                // newThis.getDetail(res.id)
+                                newThis.getUserData()
+                                newThis.getDetail(res.id)
                             }
                         })
                     },

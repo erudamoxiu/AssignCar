@@ -1,9 +1,9 @@
 <template>
   <div id="MainBody" style="height: 100%">
     <Tabs id="main_tabs" style="height: 100%" type="card" :value="activeItem" :animated="false" :closable="tabs.length > 0" @on-tab-remove="remove">
-      <TabPane label="首页" name="home" :closable="false">
+      <!-- <TabPane label="首页" name="home" :closable="false">
         <async-component componentPath="components/home" ref="componentParent"></async-component>
-      </TabPane>
+      </TabPane> -->
 
       <TabPane id="tabPane" style="" v-for="(item,index) in tabs" :label="item.alias" :name="item.name" :key="item.id">
         <async-component :componentPath="item.components" ref="componentParent"></async-component>
@@ -28,12 +28,14 @@ export default {
   },
   methods: {
     ...mapActions("menu", {
-      menuClose: "menuClose"
+      menuClose: "menuClose",
     }),
     remove(e) {
       console.log('name',e)
       this.menuClose(e)
     }
+    
+
   }
 };
 </script>

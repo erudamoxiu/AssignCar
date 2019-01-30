@@ -12,12 +12,12 @@
 
 <script>
 
-  let getUserInfoApi = '/user/getUserInfo'
-  let getJSAPI = '/user/getJSAPI'
+
+import { mapActions } from "vuex";
 
   import AppHeader from '@/components/adminHome/TopNavbar'
   import MainBody from '@/components/adminHome/MainBody';
-  import request from "@/common/js/request.js";
+  
 
   let dataTime = new Date().getFullYear();
   export default {
@@ -27,50 +27,8 @@
         date: dataTime
       }
     },
-      // let userInfo = res
-      // sessionStorage.setItem('zyUerInfo',JSON.stringify(userInfo))
-    mounted() {
-    let _this = this;
 
-    request.get("/user/getJSAPI").then(res => {
-
-      sessionStorage.setItem('zyCorpId',res.data.corpId)
-      DingTalkPC.config({
-        agentId: res.data.agentId, // 必填，微应用ID
-        corpId: res.data.corpId, //必填，企业ID
-        timeStamp: res.data.timeStamp, // 必填，生成签名的时间戳
-        nonceStr: res.data.nonceStr, // 必填，生成签名的随机串
-        signature: res.data.signature, // 必填，签名
-        jsApiList: [
-          "runtime.info",
-          "biz.contact.choose",
-          "device.notification.confirm",
-          "device.notification.alert",
-          "device.notification.prompt",
-          "biz.ding.post",
-          "biz.util.openLink"
-        ]
-      });
-      DingTalkPC.ready(function() {
-        DingTalkPC.runtime.permission.requestAuthCode({
-          corpId: res.data.corpId,
-          onSuccess: function(result) {
-            let url = '/user/getUserInfo?code='+result.code
-            request.get(url).then(res => {
-              
-              if (res) {
-                _this.admin = true
-                sessionStorage.setItem('zyUserInfo',JSON.stringify(res))
-              }else {
-                _this.message = "没有权限"
-              }           
-            })
-          }
-        });
-      });
-    });
-
-
+  methods: {
   },
     components: {
       AppHeader,

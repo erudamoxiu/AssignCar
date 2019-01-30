@@ -2,9 +2,10 @@ import axios  from 'axios'
 import qs from 'qs'
 import { Message } from 'iview'
 
-// axios.defaults.baseURL = 'http://127.0.0.1:8000'
-// axios.defaults.baseURL = 'http://10.10.131.93:8888'
+
 axios.defaults.baseURL = 'http://127.0.0.1:8000'
+// axios.defaults.baseURL = 'http://10.10.131.238:8888/'
+// axios.defaults.baseURL = 'http://www.sofa-geek.cn:9099/zyassigncar'
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
 class request {

@@ -421,7 +421,7 @@ export default {
     margin: 200 auto;
     color: #FF0000;
 }
-#apply .ivu-form-item {
+/* #apply .ivu-form-item {
     margin-bottom: 10px;
-}
+} */
 </style>

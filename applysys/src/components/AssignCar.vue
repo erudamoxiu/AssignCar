@@ -501,9 +501,9 @@ export default {
 #car .ivu-modal-footer {
     display: none;
 }
-.ivu-form-item {
+/* .ivu-form-item {
     margin-bottom: 10px;
-}
+} */
 </style>
 
 
