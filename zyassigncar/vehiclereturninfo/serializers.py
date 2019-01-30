@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from user.models import ReturnOrder, AssignDetail1, AssignDetail2, Apply, Assign
+from user.models import ReturnOrder, AssignDetail1, AssignDetail2, Apply, Assign, Driver
 
 
 class ReturnOrderSerializer(serializers.ModelSerializer):
@@ -144,7 +144,7 @@ class ApplySerializer(serializers.ModelSerializer):
                   'factoryId',
                   'useDate',
                   'useTime',
-                  'approvalUser',
+                  'approvalUserId',
                   'approvalDate',
                   'approvalOpinion',
                   'approvalStatus',
@@ -161,3 +161,14 @@ class AssignSerializer(serializers.ModelSerializer):
             'marketFeeTotal',
             # 'channel',
         ]
+
+
+class DriverSerializer(serializers.ModelSerializer):
+    factory_name = serializers.ReadOnlyField(source='factoryId.factoryName', read_only=True)
+    name = serializers.ReadOnlyField(source='driverName.name', read_only=True)
+    """
+    司机详细信息序列化器
+    """
+    class Meta:
+        model = Driver
+        fields = ('id', 'driverName',  'phone', 'factoryId', 'factory_name', 'createUser', 'updateUser', 'name')

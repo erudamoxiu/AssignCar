@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^getUserDetail$', views.getUserDetail),
     url(r'^updateUser$', views.updateUser),
     url(r'^deleteUser$', views.deleteUser),
+    url(r'^test$', views.test)
   ]

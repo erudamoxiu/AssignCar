@@ -19,20 +19,17 @@ def createdateApply(request):
         applyDate = datetime.datetime.now().strftime('%Y-%m-%d')
         # 判断用户是否选择目的地
         user_list = []
-        destName = ''
+        destId = request.POST.get('destId')
         try:
-            destId = int(request.POST.get('destId'))
-        except:
+            models.DestFee.objects.get(dest=destId)
+        except models.DestFee.DoesNotExist:
             # 获取用户输入的目的地
-            dest_name = request.POST.get("destname")
-            destName = dest_name
-            data = models.DestFee.objects.create(dest=dest_name)  # 添加到目的地费用表中
+            data = models.DestFee.objects.create(dest=destId)  # 添加到目的地费用表中
             destId = data.id  # 返回目的地id
             # 用户自主添加目的地发送通知给管理员进行补充
             approval = models.UserInfo.objects.filter(persona=1).values_list("userId", flat=True)
             approval_list = ','.join(approval)
-            print('approval_list', approval_list)
-            message_send.dest(approval_list, now_time, name)
+            # message_send.dest(approval_list, now_time, name)
 
         # 钉钉发送消息类型为列表
         user_list.append(user)
@@ -61,7 +58,8 @@ def createdateApply(request):
         except:
             return jsonResponse.error('缺少参数')
         serializer = serializers.applySerializer(data=add_data)
-        if serializer.is_valid():
+        try:
+            serializer.is_valid()
             serializer.save()
             useDate = request.POST.get('useDate')
             useTime = request.POST.get('useTime')
@@ -72,18 +70,17 @@ def createdateApply(request):
             for item in serializer2.data:
                 approval_list.append(item['userId'])
             approval_user = ','.join(approval_list)
-            message_send.apply_approval_send(approval_user, name, now_time, useDate, useTime)
+            # message_send.apply_approval_send(approval_user, name, now_time, useDate, useTime)
 
             # 申请成功发送通知给申请人
             order_n = models.OrderNumber.objects.get(id=int(orderNumber)).orderNo
             message_send.apply_message_send(user_list, order_n)
             return jsonResponse.success(True)
-        else:
+        except Exception as e:
             # 用车单申请失败删除用户输入的目的地与用车单号
-            print('errosssssssss')
-            models.DestFee.objects.filter(dest=destName).delete()
+            models.DestFee.objects.filter(id=destId).delete()
             models.OrderNumber.objects.get(id=orderNumber).delete()
-            return jsonResponse.error(serializer.errors)
+            return jsonResponse.error(e)
     return jsonResponse.error('请求方式错误')
 
 
@@ -117,7 +114,6 @@ def updateApply(request):
             'approvalDate': request.POST.get('approvalDate'),
             'approvalOpinion': request.POST.get('approvalOpinion'),
             'approvalStatus': request.POST.get('approvalStatus'),
-            # 'createUser': request.POST.get('createUser'),
             'updateUser': request.POST.get('updateUser'),
         }
         serializer = serializers.applySerializer(ap_id, data=updata_data)
@@ -257,7 +253,6 @@ def approval_apply(request):
                 user_data = models.Apply.objects.get(id=int(apply_id)).serializable_value('userId')
                 user_list.append(user_data)
                 message_send.approval_veto_send(user_list, orderNo, approvalOpinion)
-                print('不通过')
 
             elif statu == "1":
                 # 发送审核通过通知给申请人

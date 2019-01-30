@@ -23,8 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'wktg5phl5_j#=8#*8u(u*fzl7n@6o#0d1w*^8_&4567)ujit#n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+DEBUG = False
+TEMPLATE_DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 
@@ -219,3 +219,5 @@ CORS_ALLOW_HEADERS = (
     'x-requested-with',
     'Pragma',
 )
+
+WSGI_APPLICATION = 'zyassigncay.wsgi.application'

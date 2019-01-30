@@ -4,6 +4,7 @@ from utils import jsonResponse
 from . import serializers
 from user import message_send
 import datetime
+import json
 # Create your views here.
 
 
@@ -109,13 +110,11 @@ def getAllVehicleReturn(request):
         endIndex = pageIndex * pageSize
         try:
             total = models.ReturnOrder.objects.filter(approvalStatus=0).count()
-            print('total', total)
             vehicle_all = models.ReturnOrder.objects.filter(approvalStatus=0).order_by('id')[startIndex:endIndex]
         except models.ReturnOrder.DoesNotExist:
             return jsonResponse.error('数据不存在')
         serializer = serializers.ReturnOrderSerializer(vehicle_all, many=True)
         vehicle_data = serializer.data
-        print('ver', vehicle_data)
         return jsonResponse.success({
             'data': vehicle_data,
             'total': total
@@ -318,3 +317,65 @@ def driver_data_all(request):
             'total': total,
         })
     return jsonResponse.error('请求错误')
+
+
+# 历史记录查询
+def query_history(request):
+    if request.method == 'POST':
+        applyUser = request.POST.get('applyUser')
+        applyDepart = request.POST.get('applyDepart')
+        driver_name = request.POST.get('driverName')
+        driver_phone = request.POST.get('driver_phone')
+        license_plate = request.POST.get('licensePlate')
+        dest = request.POST.get('dest')
+        # start_time = request.POST.get('startTime')
+        # end_time = request.POST.get('endTime')
+
+        # try:
+        #     user_id = models.UserInfo.objects.get(name=applyUser).serializable_value('userId')
+        #     driver_id = models.UserInfo.objects.get(name=driver_name).serializable_value('userId')
+        # except models.UserInfo.DoesNotExist:
+        #     return jsonResponse.error('用户不存在')
+
+        kwargs = {}
+        apply = {}
+        if applyUser != '':
+            userId = models.UserInfo.objects.get(name=applyUser).serializable_value('userId')
+            apply['apply_data'] = userId
+        if applyDepart != '':
+            # apply_depart = models.Apply.objects.filter(applyDepart=applyDepart)
+            apply['applyDepart'] = applyDepart
+        if driver_name != '':
+            driver_id = models.UserInfo.objects.get(name=driver_name).serializable_value('userId')
+            driver = models.Driver.objects.filter(driverName=driver_id)
+            driver_ser = serializers.DriverSerializer(driver, many=True)
+            driver_data = driver_ser.data
+            kwargs['driverName'] = driver_data
+        if driver_phone != '':
+            kwargs['phone'] = driver_phone
+        if license_plate != '':
+            kwargs['licensePlate'] = license_plate
+        if dest != '':
+            kwargs['destId'] = dest
+        print('kwargs', kwargs)
+        # 从回程表中查找
+        # quest = models.ReturnOrder.objects.filter(**kwargs, assignDetail2Id__driverId__driverName=)
+
+        # 用车单
+        # apply = models.Apply.objects.filter(**kwargs)
+        # apply_ser = serializers.ApplySerializer(apply, many=True)
+        # print('data', apply_ser.data)
+
+        # 司机表
+        # driver = models.Driver.objects.filter(**kwargs)
+        # driver_ser = serializers.DriverSerializer(driver, many=True)
+        # print('driver_data', driver_ser.data)
+        return jsonResponse.success(kwargs)
+
+
+
+
+
+
+
+

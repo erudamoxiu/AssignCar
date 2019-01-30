@@ -14,14 +14,11 @@ from django.shortcuts import render
 def createdateDriver(request):
     if request.method == 'POST':
         name = request.POST.get('driverId')  # 获取添加数据
-        print('name',name)
         phone = request.POST.get('phone')
-        factory = int(request.POST.get('factoryId'))
-        print('factory', factory)
+        factory = request.POST.get('factoryId')
         createUser = request.POST.get('createUser')
         try:
-            user = models.Driver.objects.get(driverName=name)
-            print('user', user)
+            models.Driver.objects.get(driverName=name)
             # 数据已存在 返回提示
             return jsonResponse.error('司机已存在，请勿重复添加')
         # 数据不存在则进行添加
@@ -32,12 +29,12 @@ def createdateDriver(request):
                 'factoryId': factory,
                 'createUser': createUser
             }
-            print('data', data)
             serializer = DriverSerializer(data=data)
-            serializer.is_valid()
-            serializer.save()
-            print('error3', serializer.errors)
-            return jsonResponse.success(True)
+            if serializer.is_valid():
+                serializer.save()
+                return jsonResponse.success(True)
+            else:
+                return jsonResponse.error('创建失败')
     return jsonResponse.error('请求方式错误')
 
 

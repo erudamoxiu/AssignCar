@@ -2,7 +2,7 @@ import requests
 from user import get_token
 import json
 
-userid = ['manager8217']
+# userid = ['manager8217']
 
 
 # 发送用车申请审批消息
@@ -117,7 +117,7 @@ def dest(user_list, now_time, name):
     message_msg = {
         'msgtype': 'text',
         'text': {
-            "content": '用户 %s 在%s 申请用车时添加了新的目的地，请前往进行对资料的补充' % (name, now_time)  # 加上用户创建用车单的时间 防止管理员因钉钉通知限制收不到通知
+            "content": '用户 %s 在%s 申请用车时添加了新的目的地，请前往完善资料。' % (name, now_time)  # 加上用户创建用车单的时间 防止管理员因钉钉通知限制收不到通知
         }
     }
 

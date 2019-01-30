@@ -2,17 +2,17 @@
 from django.http import HttpResponse
 from user import config, models
 from . import get_token, ddVaild, sign, serializers
-import urllib.request
-from rest_framework.parsers import JSONParser
 from utils import jsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import requests
 from django.db.models import Q
 
 AppInfo = config.AppInfo()
-userid = ['manager8217']
 Vaild = ddVaild.Vaild()
 
+
+def test(request):
+    return HttpResponse('success!!!')
 
 # 判断用户是否存在
 def isUser(userId):
@@ -30,25 +30,19 @@ def getJSAPI(request):
         path = request.META['HTTP_REFERER']
     except:
         return jsonResponse.error('无法获取当前URL地址')
-
     ticket = Vaild.getTicket()
-    # print('ticket', ticket)
     try:
         if "error" in ticket:
             return jsonResponse.error(ticket['error'])
     except:
         pass
-
     sign1 = sign.Sign(ticket, path)
     result = sign1.sign()
-    # print('result', result)
     result['agentId'] = AppInfo.AgentId
     result['corpId'] = AppInfo.CorpId
     newData = {
         'data': result
     }
-    # print('result',result)
-
     return jsonResponse.success(newData)
 
 
@@ -80,6 +74,7 @@ def getUserInfo(request):
                     'userId': res1['userid'],
                     'name': res1['name'],
                     'type': 0,
+                    'department': ','.join(map(str, res1['department'])),
                     'position': res1['position'] if 'position' in res1 else '',
                     'avatar': res1['avatar'],
                     'jobNumber': res1['jobNumber'] if 'jobNumber' in res1 else '',
@@ -87,11 +82,16 @@ def getUserInfo(request):
                 serializer = serializers.UserInfoSerializer(data=add_data)
                 serializer.is_valid()
                 serializer.save()
-                print('res1', serializer.data)
                 return jsonResponse.success(serializer.data)
             serializer = serializers.UserInfoSerializer(users)
-            print('userinfo', serializer.data)
-            return jsonResponse.success(serializer.data)
+            ser = serializer.data
+            # 获取部门名字
+            id = ser['department']
+            payload = {'access_token': access_token, 'id': id}
+            res = requests.get('https://oapi.dingtalk.com/department/get', params=payload)
+            res1 = res.json()
+            ser['departmentName'] = res1['name']
+            return jsonResponse.success(ser)
         else:
             return jsonResponse.error(res['errmsg'])
     return jsonResponse.error('请求方式错误')
@@ -102,14 +102,11 @@ def getUserInfo(request):
 def addUser(request):
     if request.method == 'POST':
         userIds = request.POST.get('userIds').split(',')        # 字符串转列表
-        print('userIds', userIds)
         userType = request.POST.get('userType')
-        print('userType', userType)
         createUser = request.POST.get('createUser')
 
         if userIds is None or userType is None:
              return jsonResponse.error('Parameter error!')
-
         access_token = get_token.is_time()
         try:
             if "error" in access_token:
@@ -123,7 +120,6 @@ def addUser(request):
                 user.persona = userType
                 user.updateUser = createUser
                 user.save()
-                print('user', user)
             return jsonResponse.success(True)
         except:
             # 不存在则新建
@@ -140,6 +136,7 @@ def addUser(request):
                     'userId': res1['userid'],
                     'name': res1['name'],
                     'persona': userType,
+                    'department': ','.join(map(str, res1['department'])),
                     'position': res1['position'] if 'position' in res1 else '',
                     'avatar': res1['avatar'],
                     'jobNumber': res1['jobNumber'] if 'jobNumber' in res1 else '',
@@ -178,7 +175,7 @@ def getUser(request):
                 query = Q()
                 q1 = Q()
                 q1.connector = "AND"  # 连接的条件是AND 代表就是&
-                q1.children.append(("persona", userType))           # type代表的是数据库的字段
+                q1.children.append(("persona", userType))           # persona代表的是数据库的字段
                 q1.children.append(("name__contains", keyWord))     # name__contains代表模糊查询name字段
                 q2 = Q()
                 q2.connector = "AND"  # 连接的条件是AND 代表就是&
@@ -205,6 +202,15 @@ def getUserDetail(request):
         userId = request.GET.get('userId')
         users = models.UserInfo.objects.get(userId=userId)
         serializer = serializers.UserInfoSerializer(users)
+        # ser = serializer.data
+        # id = serializer.data['department']
+        # # 获取部门名字
+        # access_token = get_token.is_time()
+        # payload = {'access_token': access_token, 'id': id}
+        # res = requests.get('https://oapi.dingtalk.com/department/get', params=payload)
+        # res1 = res.json()
+        # ser['departmentName'] = res1['name']
+        # print(ser)
         return jsonResponse.success(serializer.data)
     return jsonResponse.error('请求方式错误')
 

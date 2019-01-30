@@ -6,7 +6,7 @@ class DriverSerializer(serializers.ModelSerializer):
     factory_name = serializers.ReadOnlyField(source='factoryId.factoryName', read_only=True)
     name = serializers.ReadOnlyField(source='driverName.name', read_only=True)
     """
-    出发地详细信息序列化器
+    司机详细信息序列化器
     """
     class Meta:
         model = Driver

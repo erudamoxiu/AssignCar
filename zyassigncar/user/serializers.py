@@ -11,6 +11,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
                   'openId',
                   'name',
                   'persona',
+                  'department',
                   'position',
                   'avatar',
                   'jobNumber',

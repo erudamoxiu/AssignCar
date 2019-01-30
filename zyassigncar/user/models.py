@@ -10,10 +10,12 @@ class UserInfo(models.Model):
         (1, '管理员'),
         (2, '审核员'),
         (3, '派车员'),
+        (4, '司机')
     )
     userId = models.CharField(max_length=50, unique=True)    # 不可重复
     openId = models.CharField(max_length=50, null=True)
     name = models.CharField(max_length=20)
+    department = models.CharField(max_length=20, null=True, blank=True)                      # 部门
     persona = models.SmallIntegerField(choices=user_type, default=0)  # 角色
     position = models.CharField(max_length=20, blank=True, null=True)
     avatar = models.CharField(max_length=255, blank=True)
@@ -158,7 +160,7 @@ class Apply (models.Model):
     carModelId = models.ForeignKey(CarModel, on_delete=models.CASCADE, null=False, verbose_name='车型id')
     factoryId = models.ForeignKey(Factory, on_delete=models.CASCADE, null=False, verbose_name='厂别id')
     useDate = models.DateField(null=True, verbose_name='使用日期')
-    useTime = models.TimeField(null=True, verbose_name='使用时间')
+    useTime = models.CharField(max_length=20, null=True, blank=True, verbose_name='使用时间')
     approvalUserId = models.CharField(max_length=20, verbose_name='审核人员', null=True)
     approvalDate = models.DateField(null=True, verbose_name='审核时间')
     approvalOpinion = models.CharField(max_length=100, null=True, blank=True, verbose_name='部门领导审核意见')
